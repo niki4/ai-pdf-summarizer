@@ -43,4 +43,4 @@ class RedisService:
         data = self.redis.get(f"document:{document_id}")
         if data:
             return json.loads(data)
-        return None 
+        return None
