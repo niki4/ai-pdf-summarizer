@@ -1,13 +1,45 @@
-The task
+An async document processing application.
 
-An async document processing application. Users can upload one or more PDF files via a website that you'll create. After some time, a per-page content and summarization of these files (one summary per each uploaded file) is displayed on the page. Application accepts any PDF and parses it to a text (or markdown if possible) using one of the following methods (allow user to choose between those methods):
+Users can upload one or more PDF files via a website that you'll create. After some time, a per-page content and summarization of these files (one summary per each uploaded file) is displayed on the page. Application accepts any PDF and parses it to a text (or markdown if possible) using one of the following methods (allow user to choose between those methods):
 - PyPDF - this won't extract markdown, only text, but that's fine.
 - Google Gemini 2.0 Flash (use its free tier to provision API key) - you can use it for parsing of PDF file to markdown
 
 
 The backend takes the uploaded PDF, the desired parser from above, then parses the contents, and finally outputs markdown -formatted text and a summary of that text.
 
-Tech stack used:
+# Set up and run:
+
+## Backend
+1. First, make sure you have Docker and Docker Compose installed on your system.
+2. Create a .env file in the root directory with the content shown below:
+```
+REDIS_HOST=localhost
+REDIS_PORT=6379
+GEMINI_API_KEY=<YOUR_API_KEY_HERE>
+```
+3. Build and start the services using Docker Compose: `docker-compose up --build`
+The application will be available at http://localhost:8000. You can use the following endpoints for testing backend:
+
+1. Upload a PDF:
+```bash
+curl -X POST "http://localhost:8000/upload" \
+  -H "accept: application/json" \
+  -H "Content-Type: multipart/form-data" \
+  -F "file=@test.pdf" \
+  -F "parser_type=pypdf"
+  ```
+> that command should you return somethig like below if you stick to default test.pdf supplied with the repo:
+```json
+{"document_id":"5650a1ff-512c-4486-ba86-ef8219740d8e","message":"Document processed successfully","summary":"Ivan Nikiforov is a Senior Software Engineer based in Malaga, Spain. He currently works at EPAM Spain, focusing on SAP CI/CD implementations using the Piper library. Previously, he worked at Google, upgrading web apps and contributing to the Google Cloud Cortex Framework. Prior to Google, he was a Software Engineer at Akvelon Inc., where he worked on DoorDash SEO/marketing tools and a computer vision service. He also held Software Engineer positions at Infotech Group and Ak Bars Digital Technologies, and Senior Software Test Engineer roles at Fujitsu GDC. Ivan holds a M.S.E. in Computing from Kazan State Technical University and has experience with languages and technologies including Python, Go, JavaScript, TypeScript, Rust, Django/DRF, PostgreSQL, NodeJS, React, GraphQL, and Google Cloud. He has also worked on personal projects involving web framework codegen, Telegram bots, and delayed task execution.\n"}
+```
+
+2. Retrieve a document (use actual UUID from previous command instead placeholder `{document_id}`):
+```bash
+curl -X GET "http://localhost:8000/document/{document_id}"
+```
+
+
+## Tech stack:
 - Python 3.12+ with FastAPI
 - Redis v7+
 - Docker Compose for dependencies like Redis
@@ -15,7 +47,7 @@ Tech stack used:
 - Google Gemini 2.0 Flash for advanced parsing into the markdown and summarization
 - Javascript or Typescript with React (or Next.JS) for the Frontend
 
-Implementation details:
+## Implementation details:
 - Start with the backend part, we're less interested in Frontend (nice to have, but not a must).
 - The API should take the uploaded PDF, and the desired parser value - PyPDF, Google Gemini Flash or Mistral - and then parse and store in Redis the resulting markdown and a summary of that text.
 - For the summary just use Gemini Flash 2.0.
@@ -25,12 +57,13 @@ Implementation details:
 - On Frontend you can use API polling, websockets or SSE to display summarization results once they're ready (but ok to demo with Postman or CURL).
 
 
-Helpful:
+## Helpful:
 - Google Gemini MODEL_ID = "gemini-2.0-flash" and some examples of usage can be found here https://github.com/GoogleCloudPlatform/generative-ai/blob/main/gemini/getting-started/intro_gemini_2_0_flash.ipynb
 - If some requirements are not clear, then make reasonable assumptions and move forward with implementation
 - If you stuck on some technicality then feel free to work around it any way you can, and proceed forward with implementation
 
-
+# 
+TODO:
 The priority of implemented features (top to bottom: from most important to "nice to have"):
 - Backend application, able to run and serve concurrent API requests
 - Document upload and processing with PyPDF
@@ -38,26 +71,3 @@ The priority of implemented features (top to bottom: from most important to "nic
 - Summarization via Google Gemini
 - Document processing via Mistral OCR
 - Frontend
-
---
-Set up and run:
-
-1. irst, make sure you have Docker and Docker Compose installed on your system.
-2. Create a .env file in the root directory with the content shown above. Replace `your_GEMINI_API_KEY_here` with your actual Google Gemini API key.
-3. Build and start the services using Docker Compose: `docker-compose up --build`
-The application will be available at http://localhost:8000. You can use the following endpoints:
-
-1. Upload a PDF:
-```bash
-curl -X POST "http://localhost:8000/upload" \
-  -H "accept: application/json" \
-  -H "Content-Type: multipart/form-data" \
-  -F "file=@your_file.pdf" \
-  -F "parser_type=pypdf"
-  ```
-
-2. Retrieve a document:
-```bash
-curl -X GET "http://localhost:8000/document/{document_id}"
-```
-
