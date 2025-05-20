@@ -47,9 +47,15 @@ curl -X GET "http://localhost:8000/document/{document_id}"
 
 # Development
 
+## Backend tests
 1. Create & activate venv: `python -m venv .venv` then `.venv\Scripts\activate`
 2. Install deps: `pip install -r requirements.txt`
 3. Try to run some tests: `pytest app/tests/ -v`
+
+## Frontend tests
+1. Make sure you have npm installed: `npm --version`
+2. Install deps: `cd frontend && npm install`
+3. Run tests: `npm test`
 
 ## Tech stack:
 - Python 3.12+ with FastAPI
