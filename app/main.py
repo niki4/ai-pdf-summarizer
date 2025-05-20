@@ -41,24 +41,12 @@ async def upload_pdf(
         # Read the PDF content
         content = await file.read()
         
-        # Parse PDF based on selected parser
-        if parser_type == ParserType.PYPDF:
-            parsed_content = parse_pdf(content)
-        elif parser_type == ParserType.GEMINI:
-            parsed_content = parse_pdf_with_gemini(content)
-        else:
-            raise HTTPException(status_code=400, detail="Unsupported parser type")
-        
-        # Generate summary using Gemini
-        summary = generate_summary("\n".join(parsed_content))
-        
-        # Store results in Redis
-        document_id = redis_service.store_document(parsed_content, summary)
+        # Queue document for processing
+        document_id = redis_service.queue_document(content, parser_type)
         
         return {
             "document_id": document_id,
-            "content": parsed_content,
-            "summary": summary
+            "message": "Document queued for processing"
         }
         
     except Exception as e:
@@ -66,7 +54,7 @@ async def upload_pdf(
 
 @app.get("/document/{document_id}")
 async def get_document(document_id: str):
-    document = redis_service.get_document(document_id)
-    if not document:
+    status = redis_service.get_document_status(document_id)
+    if status["status"] == "not_found":
         raise HTTPException(status_code=404, detail="Document not found")
-    return document 
+    return status 
