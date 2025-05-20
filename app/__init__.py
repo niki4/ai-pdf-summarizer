@@ -1,0 +1,3 @@
+"""
+BWAT-AIML application package
+""" 

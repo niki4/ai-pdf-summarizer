@@ -8,11 +8,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
-# Configure Gemini
-api_key = os.getenv("GEMINI_API_KEY")
-if not api_key:
-    raise ValueError("GEMINI_API_KEY environment variable is not set")
-genai.configure(api_key=api_key)
+def configure_gemini():
+    """Configure Gemini API with the API key"""
+    api_key = os.getenv("GEMINI_API_KEY")
+    if not api_key:
+        raise ValueError("GEMINI_API_KEY environment variable is not set")
+    genai.configure(api_key=api_key)
+
+# Configure Gemini only when the module is actually used
+def get_gemini_model():
+    """Get configured Gemini model"""
+    configure_gemini()
+    return genai.GenerativeModel('gemini-2.0-flash')
 
 def parse_pdf(content: bytes) -> List[str]:
     """
@@ -53,7 +60,7 @@ def parse_pdf_with_gemini(content: bytes) -> List[str]:
         pdf_base64 = base64.b64encode(content).decode('utf-8')
 
         # Use Gemini to process the PDF and convert to markdown
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        model = get_gemini_model()
         prompt = f"""Please analyze this PDF and convert its content into well-formatted markdown.
         Process each page separately and preserve all important information, structure, and formatting.
         Include headers, lists, and other markdown elements where appropriate.
@@ -82,7 +89,7 @@ def generate_summary(text: str) -> str:
     """
     try:
         logger.info("Initializing Gemini model for summary generation")
-        model = genai.GenerativeModel('gemini-2.0-flash')
+        model = get_gemini_model()
         logger.info("Generating summary")
         response = model.generate_content(f"Please provide a concise summary of the following text:\n\n{text}")
         logger.info("Summary generated successfully")

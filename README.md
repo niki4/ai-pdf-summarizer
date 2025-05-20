@@ -45,6 +45,12 @@ curl -X POST "http://localhost:8000/upload" \
 curl -X GET "http://localhost:8000/document/{document_id}"
 ```
 
+# Development
+
+1. Create & activate venv: `python -m venv .venv` then `.venv\Scripts\activate`
+2. Install deps: `pip install -r requirements.txt`
+3. Try to run some tests: `pytest app/tests/ -v`
+
 ## Tech stack:
 - Python 3.12+ with FastAPI
 - Redis v7+
