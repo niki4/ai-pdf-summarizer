@@ -1,6 +1,11 @@
-version: '3.8'
-
 services:
+  frontend:
+    build: ./frontend
+    ports:
+      - "80:80"
+    depends_on:
+      - api
+
   api:
     build: .
     ports:
