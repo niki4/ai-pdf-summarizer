@@ -28,10 +28,6 @@ curl -X POST "http://localhost:8000/upload" \
   -F "file=@test.pdf" \
   -F "parser_type=pypdf"
   ```
-> that command should you return somethig like below if you stick to default test.pdf supplied with the repo:
-```json
-{"document_id":"5650a1ff-512c-4486-ba86-ef8219740d8e","message":"Document processed successfully","summary":"Ivan Nikiforov is a Senior Software Engineer based in Malaga, Spain. He currently works at EPAM Spain, focusing on SAP CI/CD implementations using the Piper library. Previously, he worked at Google, upgrading web apps and contributing to the Google Cloud Cortex Framework. Prior to Google, he was a Software Engineer at Akvelon Inc., where he worked on DoorDash SEO/marketing tools and a computer vision service. He also held Software Engineer positions at Infotech Group and Ak Bars Digital Technologies, and Senior Software Test Engineer roles at Fujitsu GDC. Ivan holds a M.S.E. in Computing from Kazan State Technical University and has experience with languages and technologies including Python, Go, JavaScript, TypeScript, Rust, Django/DRF, PostgreSQL, NodeJS, React, GraphQL, and Google Cloud. He has also worked on personal projects involving web framework codegen, Telegram bots, and delayed task execution.\n"}
-```
 
 2. Retrieve a document (use actual UUID from previous command instead placeholder `{document_id}`):
 ```bash

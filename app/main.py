@@ -3,7 +3,7 @@ from fastapi.middleware.cors import CORSMiddleware
 import google.generativeai as genai
 import os
 from dotenv import load_dotenv
-from .services.pdf_parser import parse_pdf
+from .services.pdf_parser import parse_pdf, parse_pdf_with_gemini, generate_summary
 from .services.redis_service import RedisService
 from .models.parser_type import ParserType
 
@@ -43,20 +43,21 @@ async def upload_pdf(
         
         # Parse PDF based on selected parser
         if parser_type == ParserType.PYPDF:
-            parsed_text = parse_pdf(content)
+            parsed_content = parse_pdf(content)
+        elif parser_type == ParserType.GEMINI:
+            parsed_content = parse_pdf_with_gemini(content)
         else:
-            raise HTTPException(status_code=400, detail="Only PyPDF parser is currently supported")
+            raise HTTPException(status_code=400, detail="Unsupported parser type")
         
         # Generate summary using Gemini
-        model = genai.GenerativeModel('gemini-2.0-flash')
-        summary = model.generate_content(f"Please provide a concise summary of the following text:\n\n{parsed_text}").text
+        summary = generate_summary("\n".join(parsed_content))
         
         # Store results in Redis
-        document_id = redis_service.store_document(parsed_text, summary)
+        document_id = redis_service.store_document(parsed_content, summary)
         
         return {
             "document_id": document_id,
-            "message": "Document processed successfully",
+            "content": parsed_content,
             "summary": summary
         }
         

@@ -1,17 +1,18 @@
 import json
 import uuid
 from redis import Redis
+from typing import List, Union
 
 class RedisService:
     def __init__(self, host: str = "localhost", port: int = 6379):
         self.redis = Redis(host=host, port=port, decode_responses=True)
         
-    def store_document(self, parsed_text: str, summary: str) -> str:
+    def store_document(self, content: Union[str, List[str]], summary: str) -> str:
         """
         Store document content and summary in Redis.
         
         Args:
-            parsed_text (str): The parsed text from the PDF
+            content (Union[str, List[str]]): The parsed text from the PDF (either plain text or list of markdown pages)
             summary (str): The generated summary
             
         Returns:
@@ -19,7 +20,7 @@ class RedisService:
         """
         document_id = str(uuid.uuid4())
         document_data = {
-            "parsed_text": parsed_text,
+            "content": content,
             "summary": summary
         }
         
