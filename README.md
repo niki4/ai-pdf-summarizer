@@ -9,7 +9,7 @@ The backend takes the uploaded PDF, the desired parser from above, then parses t
 # Set up and run:
 
 ## To run the application:
-1. First, make sure you have Docker and Docker Compose installed on your system.
+1. First, make sure you have Docker and Docker Compose installed on your system. On Windows you can use [Podman](https://podman.io/) as well (in that case use command `podman compose up --build` instead `docker-compose`).
 2. Create a .env file in the root directory with the content shown below:
 ```
 REDIS_HOST=localhost
