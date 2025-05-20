@@ -28,7 +28,7 @@ The frontend will automatically proxy API requests to the backend service, and t
 * Automatic polling for document status
 * Display of document content and summary when ready
 
-## If you prefer to test backend only Backend
+## If you prefer to test only API
 You can use the following endpoints for testing backend:
 
 1. Upload a PDF:
